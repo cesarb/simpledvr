@@ -2,7 +2,14 @@ TEMPLATE = app
 
 QT += qml quick widgets
 
-SOURCES += main.cpp
+CONFIG += c++14 link_pkgconfig
+PKGCONFIG += Qt5GStreamerQuick-1.0
+
+SOURCES += main.cpp \
+    pipeline.cpp
+
+HEADERS += \
+    pipeline.h
 
 RESOURCES += qml.qrc
 
