@@ -103,7 +103,8 @@ int main(int argc, char *argv[])
     //Pipeline pipeline(createCaptureSource(), videoSurface->videoSink(), createVAAPIEncoder);
 
     QQmlApplicationEngine engine;
-    engine.rootContext()->setContextProperty(QLatin1String("videoSurface"), videoSurface);
+    engine.rootContext()->setContextProperty(QStringLiteral("videoSurface"), videoSurface);
+    engine.rootContext()->setContextProperty(QStringLiteral("pipeline"), &pipeline);
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     pipeline.start();
