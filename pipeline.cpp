@@ -3,8 +3,10 @@
 #include <QDebug>
 
 #include <QGlib/Connect>
+#include <QGst/Bin>
 #include <QGst/Bus>
 #include <QGst/ElementFactory>
+#include <QGst/Event>
 #include <QGst/GhostPad>
 #include <QGst/Message>
 #include <QGst/Pad>
@@ -57,9 +59,9 @@ void Pipeline::stop()
     pipeline->setState(QGst::StateNull);
 }
 
-QGst::PipelinePtr Pipeline::createRecordPipeline(QGst::ElementPtr (*encoderElementFactory)())
+QGst::ElementPtr Pipeline::createRecordBin(QGst::ElementPtr (*encoderElementFactory)())
 {
-    auto recordPipeline = QGst::Pipeline::create("record");
+    auto recordBin = QGst::Bin::create("record");
 
     auto videoInputQueue = QGst::ElementFactory::make("queue", "videoRecordQueue");
     auto audioInputQueue = QGst::ElementFactory::make("queue", "audioRecordQueue");
@@ -74,10 +76,10 @@ QGst::PipelinePtr Pipeline::createRecordPipeline(QGst::ElementPtr (*encoderEleme
     auto filesink = QGst::ElementFactory::make("filesink");
     filesink->setProperty("location", "test.mkv");
 
-    recordPipeline->add(videoInputQueue, audioInputQueue, audioconvert, encoder, videoOutputQueue, audioOutputQueue, mux, filesink);
+    recordBin->add(videoInputQueue, audioInputQueue, audioconvert, encoder, videoOutputQueue, audioOutputQueue, mux, filesink);
 
-    recordPipeline->addPad(QGst::GhostPad::create(videoInputQueue->getStaticPad("sink"), "video"));
-    recordPipeline->addPad(QGst::GhostPad::create(audioInputQueue->getStaticPad("sink"), "audio"));
+    recordBin->addPad(QGst::GhostPad::create(videoInputQueue->getStaticPad("sink"), "video"));
+    recordBin->addPad(QGst::GhostPad::create(audioInputQueue->getStaticPad("sink"), "audio"));
 
     audioInputQueue->link(audioconvert);
 
@@ -92,24 +94,24 @@ QGst::PipelinePtr Pipeline::createRecordPipeline(QGst::ElementPtr (*encoderEleme
 
     mux->link(filesink);
 
-    return recordPipeline;
+    return recordBin;
 }
 
 void Pipeline::startRecording()
 {
-    if (recordPipeline)
+    if (recordBin)
         return;
 
-    recordPipeline = createRecordPipeline(encoderElementFactory);
+    recordBin = createRecordBin(encoderElementFactory);
 
-    pipeline->add(recordPipeline);
+    pipeline->add(recordBin);
 
-    videoRecordValve->getStaticPad("src")->link(recordPipeline->getStaticPad("video"));
-    audioRecordValve->getStaticPad("src")->link(recordPipeline->getStaticPad("audio"));
+    videoRecordValve->getStaticPad("src")->link(recordBin->getStaticPad("video"));
+    audioRecordValve->getStaticPad("src")->link(recordBin->getStaticPad("audio"));
 
     emit recordingStarting();
 
-    recordPipeline->syncStateWithParent();
+    recordBin->syncStateWithParent();
 
     videoRecordValve->setProperty("drop", false);
     audioRecordValve->setProperty("drop", false);
@@ -124,16 +126,16 @@ void Pipeline::stopRecording()
     videoRecordValve->setProperty("drop", true);
     audioRecordValve->setProperty("drop", true);
 
-    // Insert EOS
-
+    recordBin->getStaticPad("video")->sendEvent(QGst::EosEvent::create());
+    recordBin->getStaticPad("audio")->sendEvent(QGst::EosEvent::create());
 }
 
 void Pipeline::recordingEos()
 {
-    recordPipeline->setState(QGst::StateNull);
+    recordBin->setState(QGst::StateNull);
 
-    pipeline->remove(recordPipeline);
-    recordPipeline.clear();
+    pipeline->remove(recordBin);
+    recordBin.clear();
 
     emit recordingStopped();
 }

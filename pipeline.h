@@ -27,16 +27,17 @@ public slots:
     void stopRecording();
 
 private:
-    static QGst::PipelinePtr createRecordPipeline(QGst::ElementPtr (*encoderElementFactory)());
+    static QGst::ElementPtr createRecordBin(QGst::ElementPtr (*encoderElementFactory)());
     void recordingEos();
 
     void onBusMessage(const QGst::MessagePtr &message);
 
     QGst::PipelinePtr pipeline;
-    QGst::PipelinePtr recordPipeline;
 
     QGst::ElementPtr videoRecordValve;
     QGst::ElementPtr audioRecordValve;
+
+    QGst::ElementPtr recordBin;
 
     QGst::ElementPtr (*encoderElementFactory)();
 };
