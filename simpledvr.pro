@@ -3,7 +3,7 @@ TEMPLATE = app
 QT += qml quick widgets
 
 CONFIG += c++14 link_pkgconfig
-PKGCONFIG += Qt5GStreamerQuick-1.0
+PKGCONFIG += Qt5GStreamerQuick-1.0 gstreamer-1.0
 
 SOURCES += main.cpp \
     pipeline.cpp

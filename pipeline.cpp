@@ -11,6 +11,8 @@
 #include <QGst/Message>
 #include <QGst/Pad>
 
+#include <gst/gst.h>
+
 Pipeline::Pipeline(const QGst::ElementPtr &source, const QGst::ElementPtr &videoSink, QGst::ElementPtr (*encoderElementFactory)(), QObject *parent)
     : QObject(parent), pipeline(QGst::Pipeline::create("pipeline")),
       videoRecordValve(QGst::ElementFactory::make("valve", "videoRecordValve")),
@@ -119,6 +121,16 @@ void Pipeline::startRecording()
     emit recordingStarted();
 }
 
+bool Pipeline::sendEosEvent(const QGst::PadPtr &pad)
+{
+    // pad->sendEvent(QGst::EosEvent::create()) is broken
+    // see https://bugzilla.gnome.org/show_bug.cgi?id=740319
+
+    auto event = QGst::EosEvent::create();
+    gst_event_ref(event);
+    return gst_pad_send_event(pad, event);
+}
+
 void Pipeline::stopRecording()
 {
     emit recordingStopping();
@@ -126,11 +138,11 @@ void Pipeline::stopRecording()
     videoRecordValve->setProperty("drop", true);
     audioRecordValve->setProperty("drop", true);
 
-    recordBin->getStaticPad("video")->sendEvent(QGst::EosEvent::create());
-    recordBin->getStaticPad("audio")->sendEvent(QGst::EosEvent::create());
+    sendEosEvent(recordBin->getStaticPad("video"));
+    sendEosEvent(recordBin->getStaticPad("audio"));
 }
 
-void Pipeline::recordingEos()
+void Pipeline::onEosMessage()
 {
     recordBin->setState(QGst::StateNull);
 
@@ -157,7 +169,7 @@ void Pipeline::onBusMessage(const QGst::MessagePtr &message)
         if (message->internalStructure()->name() == QLatin1String("GstBinForwarded")) {
             auto forwardedMessage = message->internalStructure()->value("message").get<QGst::MessagePtr>();
             if (forwardedMessage->type() == QGst::MessageEos)
-                recordingEos();
+                onEosMessage();
         }
         break;
     default:

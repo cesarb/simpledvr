@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include <QGst/Element>
+#include <QGst/Pad>
 #include <QGst/Pipeline>
 
 class Pipeline : public QObject
@@ -28,8 +29,9 @@ public slots:
 
 private:
     static QGst::ElementPtr createRecordBin(QGst::ElementPtr (*encoderElementFactory)());
-    void recordingEos();
+    static bool sendEosEvent(const QGst::PadPtr &pad);
 
+    void onEosMessage();
     void onBusMessage(const QGst::MessagePtr &message);
 
     QGst::PipelinePtr pipeline;
