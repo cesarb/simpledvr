@@ -133,6 +133,9 @@ bool Pipeline::sendEosEvent(const QGst::PadPtr &pad)
 
 void Pipeline::stopRecording()
 {
+    if (!recordBin)
+        return;
+
     emit recordingStopping();
 
     videoRecordValve->setProperty("drop", true);

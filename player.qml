@@ -27,6 +27,29 @@ Window {
         anchors.left: parent.left
         z: 1
         opacity: 0.25
+
+        Button {
+            text: "Record"
+            onClicked: pipeline.startRecording()
+        }
+
+        Text {
+            id: status
+            text: "Stopped"
+
+            Connections {
+                target: pipeline
+                onRecordingStarting: status.text = "Starting"
+                onRecordingStarted: status.text = "Started"
+                onRecordingStopping: status.text = "Stopping"
+                onRecordingStopped: status.text = "Stopped"
+            }
+        }
+
+        Button {
+            text: "Stop"
+            onClicked: pipeline.stopRecording()
+        }
     }
 
     ColumnLayout {
