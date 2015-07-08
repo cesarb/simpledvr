@@ -13,6 +13,7 @@
 #include <QGst/GhostPad>
 
 #include "pipeline.h"
+#include "storage.h"
 
 static QGst::ElementPtr createTestSource()
 {
@@ -111,10 +112,12 @@ int main(int argc, char *argv[])
     auto encoderFactory = parser.isSet(testEncoderOption) ? createSoftwareEncoder : createVAAPIEncoder;
 
     Pipeline pipeline(source, videoSurface->videoSink(), encoderFactory);
+    StorageMonitor storageMonitor;
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("videoSurface"), videoSurface);
     engine.rootContext()->setContextProperty(QStringLiteral("pipeline"), &pipeline);
+    engine.rootContext()->setContextProperty(QStringLiteral("storageMonitor"), &storageMonitor);
     engine.load(QUrl(QStringLiteral("qrc:/player.qml")));
 
     pipeline.start();

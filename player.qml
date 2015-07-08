@@ -36,6 +36,7 @@ Window {
         Text {
             id: status
             text: "Stopped"
+            textFormat: Text.PlainText
 
             Connections {
                 target: pipeline
@@ -62,6 +63,18 @@ Window {
         Button {
             text: "Close"
             onClicked: window.close()
+        }
+
+        Text {
+            id: available
+            text: ""
+            textFormat: Text.PlainText
+            horizontalAlignment: Text.AlignRight
+
+            Connections {
+                target: storageMonitor
+                onStorageAvailable: available.text = text
+            }
         }
     }
 }

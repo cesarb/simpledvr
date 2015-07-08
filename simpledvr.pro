@@ -6,10 +6,12 @@ CONFIG += c++14 link_pkgconfig
 PKGCONFIG += Qt5GStreamerQuick-1.0 gstreamer-1.0
 
 SOURCES += main.cpp \
-    pipeline.cpp
+    pipeline.cpp \
+    storage.cpp
 
 HEADERS += \
-    pipeline.h
+    pipeline.h \
+    storage.h
 
 RESOURCES += qml.qrc
 
