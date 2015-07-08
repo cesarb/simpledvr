@@ -15,6 +15,9 @@ Window {
     width: 640
     height: 480
 
+    property real controlZ: 1
+    property real controlOpacity: 0.25
+
     VideoItem {
         id: video
         anchors.fill: parent
@@ -25,8 +28,8 @@ Window {
         id: leftColumn
         anchors.top: parent.top
         anchors.left: parent.left
-        z: 1
-        opacity: 0.25
+        z: controlZ
+        opacity: controlOpacity
 
         Button {
             text: "Record"
@@ -58,8 +61,8 @@ Window {
         id: rightColumn
         anchors.top: parent.top
         anchors.right: parent.right
-        z: 1
-        opacity: 0.25
+        z: controlZ
+        opacity: controlOpacity
 
         Button {
             text: "Close"
@@ -82,13 +85,13 @@ Window {
         id: dateTimeColumn
         anchors.top: parent.top
         anchors.right: rightColumn.left
-        z: 1
-        opacity: 0.25
+        z: controlZ
+        opacity: controlOpacity
 
         Text {
             id: dateTime
-            textFormat: Text.PlainText
             horizontalAlignment: Text.AlignRight
+            textFormat: Text.PlainText
         }
 
         Timer {
