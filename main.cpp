@@ -102,8 +102,8 @@ int main(int argc, char *argv[])
     QGst::init(&argc, &argv);
 
     QCommandLineParser parser;
-    QCommandLineOption testSourceOption("test-source");
-    QCommandLineOption testEncoderOption("test-encoder");
+    QCommandLineOption testSourceOption(QStringLiteral("test-source"));
+    QCommandLineOption testEncoderOption(QStringLiteral("test-encoder"));
     parser.addOptions({testSourceOption, testEncoderOption});
     parser.process(app);
 
