@@ -36,6 +36,7 @@ Window {
         Text {
             id: status
             text: "Stopped"
+            horizontalAlignment: Text.AlignLeft
             textFormat: Text.PlainText
 
             Connections {
@@ -67,14 +68,36 @@ Window {
 
         Text {
             id: available
-            text: ""
-            textFormat: Text.PlainText
             horizontalAlignment: Text.AlignRight
+            textFormat: Text.PlainText
 
             Connections {
                 target: storageMonitor
                 onStorageAvailable: available.text = text
             }
+        }
+    }
+
+    ColumnLayout {
+        id: dateTimeColumn
+        anchors.top: parent.top
+        anchors.right: rightColumn.left
+        z: 1
+        opacity: 0.25
+
+        Text {
+            id: dateTime
+            textFormat: Text.PlainText
+            horizontalAlignment: Text.AlignRight
+        }
+
+        Timer {
+            interval: 500
+            repeat: true
+            running: true
+            triggeredOnStart: true
+
+            onTriggered: dateTime.text = new Date().toLocaleString()
         }
     }
 }
