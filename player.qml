@@ -36,6 +36,27 @@ Window {
             onClicked: pipeline.startRecording()
         }
 
+        Button {
+            text: "+"
+            onClicked: recordingTimer.addSecs(60)
+        }
+
+        Text {
+            id: timeRemaining
+            horizontalAlignment: Text.AlignLeft
+            textFormat: Text.PlainText
+
+            Connections {
+                target: recordingTimer
+                onTimeRemaining: timeRemaining.text = text
+            }
+        }
+
+        Button {
+            text: "-"
+            onClicked: recordingTimer.addSecs(-60)
+        }
+
         Text {
             id: status
             text: "Stopped"
