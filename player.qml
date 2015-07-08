@@ -9,8 +9,8 @@ Window {
     title: "Simple DVR"
 
     visible: true
-    visibility: "Maximized"
-    //visibility: "FullScreen"
+    //visibility: "Maximized"
+    visibility: "FullScreen"
 
     width: 640
     height: 480
