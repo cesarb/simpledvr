@@ -103,25 +103,25 @@ Window {
     }
 
     ColumnLayout {
-        id: dateTimeColumn
+        id: centerTopColumn
         anchors.top: parent.top
-        anchors.right: rightColumn.left
+        anchors.horizontalCenter: parent.horizontalCenter
         z: controlZ
         opacity: controlOpacity
 
         Text {
             id: dateTime
-            horizontalAlignment: Text.AlignRight
+            horizontalAlignment: Text.AlignCenter
             textFormat: Text.PlainText
-        }
 
-        Timer {
-            interval: 500
-            repeat: true
-            running: true
-            triggeredOnStart: true
+            Timer {
+                interval: 500
+                repeat: true
+                running: true
+                triggeredOnStart: true
 
-            onTriggered: dateTime.text = new Date().toLocaleString()
+                onTriggered: parent.text = new Date().toLocaleString()
+            }
         }
     }
 }
