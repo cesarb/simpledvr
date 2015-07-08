@@ -17,12 +17,17 @@ void RecordingTimer::addSecs(qint64 secs)
     updateTimer();
 }
 
+void RecordingTimer::clear()
+{
+    stopTime = QDateTime();
+    emit timeRemaining(QString());
+}
+
 void RecordingTimer::updateTimer()
 {
     auto remaining = QDateTime::currentDateTime().secsTo(stopTime);
     if (remaining <= 0) {
-        stopTime = QDateTime();
-        emit timeRemaining(QString());
+        clear();
         return;
     }
 

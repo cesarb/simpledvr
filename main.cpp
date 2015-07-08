@@ -117,6 +117,8 @@ int main(int argc, char *argv[])
     RecordingTimer recordingTimer;
 
     QObject::connect(&recordingTimer, &RecordingTimer::stopRecording, &pipeline, &Pipeline::stopRecording);
+    QObject::connect(&pipeline, &Pipeline::recordingStopping, &recordingTimer, &RecordingTimer::clear);
+    QObject::connect(&pipeline, &Pipeline::recordingStopped, &recordingTimer, &RecordingTimer::clear);
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("videoSurface"), videoSurface);

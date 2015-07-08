@@ -16,6 +16,7 @@ signals:
 
 public slots:
     void addSecs(qint64 secs);
+    void clear();
 
 protected:
     virtual void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
