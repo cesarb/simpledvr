@@ -103,7 +103,7 @@ Window {
     }
 
     ColumnLayout {
-        id: centerTopColumn
+        id: centerColumn
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         z: controlZ
