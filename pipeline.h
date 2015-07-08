@@ -1,6 +1,7 @@
 #ifndef PIPELINE_H
 #define PIPELINE_H
 
+#include <QByteArray>
 #include <QObject>
 
 #include <QGst/Element>
@@ -28,6 +29,7 @@ public slots:
     void stopRecording();
 
 private:
+    static QByteArray outputFilename();
     static QGst::ElementPtr createRecordBin(QGst::ElementPtr (*encoderElementFactory)());
     static bool sendEosEvent(const QGst::PadPtr &pad);
 

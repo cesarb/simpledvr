@@ -1,6 +1,8 @@
 #include "pipeline.h"
 
+#include <QDateTime>
 #include <QDebug>
+#include <QStandardPaths>
 
 #include <QGlib/Connect>
 #include <QGst/Bin>
@@ -61,6 +63,13 @@ void Pipeline::stop()
     pipeline->setState(QGst::StateNull);
 }
 
+QByteArray Pipeline::outputFilename()
+{
+    auto path = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
+    auto name = QDateTime::currentDateTime().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss"));
+    return (path + '/' + name + ".mkv").toLocal8Bit();
+}
+
 QGst::ElementPtr Pipeline::createRecordBin(QGst::ElementPtr (*encoderElementFactory)())
 {
     auto recordBin = QGst::Bin::create("record");
@@ -76,7 +85,7 @@ QGst::ElementPtr Pipeline::createRecordBin(QGst::ElementPtr (*encoderElementFact
 
     auto mux = QGst::ElementFactory::make("matroskamux", "mux");
     auto filesink = QGst::ElementFactory::make("filesink");
-    filesink->setProperty("location", "test.mkv");
+    filesink->setProperty("location", outputFilename().constData());
 
     recordBin->add(videoInputQueue, audioInputQueue, audioconvert, encoder, videoOutputQueue, audioOutputQueue, mux, filesink);
 
