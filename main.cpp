@@ -1,4 +1,6 @@
 #include <QApplication>
+#include <QCommandLineParser>
+#include <QCommandLineOption>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
@@ -97,10 +99,18 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     QGst::init(&argc, &argv);
 
+    QCommandLineParser parser;
+    QCommandLineOption testSourceOption("test-source");
+    QCommandLineOption testEncoderOption("test-encoder");
+    parser.addOptions({testSourceOption, testEncoderOption});
+    parser.process(app);
+
     auto videoSurface = new QGst::Quick::VideoSurface;
 
-    Pipeline pipeline(createTestSource(), videoSurface->videoSink(), createSoftwareEncoder);
-    //Pipeline pipeline(createCaptureSource(), videoSurface->videoSink(), createVAAPIEncoder);
+    auto source = parser.isSet(testSourceOption) ? createTestSource() : createCaptureSource();
+    auto encoderFactory = parser.isSet(testEncoderOption) ? createSoftwareEncoder : createVAAPIEncoder;
+
+    Pipeline pipeline(source, videoSurface->videoSink(), encoderFactory);
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("videoSurface"), videoSurface);
