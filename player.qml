@@ -43,6 +43,9 @@ Window {
 
         Text {
             id: timeRemaining
+            color: "#ffffff"
+            style: Text.Outline
+            styleColor: "#000000"
             horizontalAlignment: Text.AlignLeft
             textFormat: Text.PlainText
 
@@ -60,6 +63,9 @@ Window {
         Text {
             id: status
             text: "Stopped"
+            color: "#ffffff"
+            style: Text.Outline
+            styleColor: "#000000"
             horizontalAlignment: Text.AlignLeft
             textFormat: Text.PlainText
 
@@ -92,6 +98,9 @@ Window {
 
         Text {
             id: available
+            color: "#ffffff"
+            style: Text.Outline
+            styleColor: "#000000"
             horizontalAlignment: Text.AlignRight
             textFormat: Text.PlainText
 
@@ -111,6 +120,9 @@ Window {
 
         Text {
             id: dateTime
+            color: "#ffffff"
+            style: Text.Outline
+            styleColor: "#000000"
             horizontalAlignment: Text.AlignCenter
             textFormat: Text.PlainText
 
