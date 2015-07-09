@@ -62,7 +62,6 @@ Window {
 
         Text {
             id: status
-            text: "Stopped"
             color: "#ffffff"
             style: Text.Outline
             styleColor: "#000000"
@@ -72,9 +71,9 @@ Window {
             Connections {
                 target: pipeline
                 onRecordingStarting: status.text = "Starting"
-                onRecordingStarted: status.text = "Started"
+                onRecordingStarted: status.text = "Recording"
                 onRecordingStopping: status.text = "Stopping"
-                onRecordingStopped: status.text = "Stopped"
+                onRecordingStopped: status.text = ""
             }
         }
 
