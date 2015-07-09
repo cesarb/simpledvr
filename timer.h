@@ -15,6 +15,7 @@ signals:
     void stopRecording();
 
 public slots:
+    void setStopTime(const QDateTime &stopTime) { this->stopTime = stopTime; }
     void addSecs(qint64 secs);
     void clear();
 

@@ -18,6 +18,9 @@ Window {
     property real controlZ: 1
     property real controlOpacity: 0.25
 
+    property real scheduleZ: 1
+    property real scheduleOpacity: 0.75
+
     VideoItem {
         id: video
         anchors.fill: parent
@@ -133,6 +136,25 @@ Window {
 
                 onTriggered: parent.text = new Date().toLocaleString()
             }
+        }
+    }
+
+    ListView {
+        id: scheduleList
+        anchors.top: centerColumn.bottom
+        anchors.left: leftColumn.right
+        anchors.right: rightColumn.left
+        z: scheduleZ
+        opacity: scheduleOpacity
+
+        model: recordingScheduler
+        delegate: Text {
+            text: display
+            color: "#ffffff"
+            style: Text.Outline
+            styleColor: "#000000"
+            horizontalAlignment: Text.AlignLeft
+            textFormat: Text.PlainText
         }
     }
 }

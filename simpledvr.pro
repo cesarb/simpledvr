@@ -8,12 +8,14 @@ PKGCONFIG += Qt5GStreamerQuick-1.0 gstreamer-1.0
 SOURCES += main.cpp \
     pipeline.cpp \
     storage.cpp \
-    timer.cpp
+    timer.cpp \
+    scheduler.cpp
 
 HEADERS += \
     pipeline.h \
     storage.h \
-    timer.h
+    timer.h \
+    scheduler.h
 
 RESOURCES += qml.qrc
 

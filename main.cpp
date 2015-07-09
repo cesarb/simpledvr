@@ -13,6 +13,7 @@
 #include <QGst/GhostPad>
 
 #include "pipeline.h"
+#include "scheduler.h"
 #include "storage.h"
 #include "timer.h"
 
@@ -113,18 +114,24 @@ int main(int argc, char *argv[])
     auto encoderFactory = parser.isSet(testEncoderOption) ? createSoftwareEncoder : createVAAPIEncoder;
 
     Pipeline pipeline(source, videoSurface->videoSink(), encoderFactory);
-    StorageMonitor storageMonitor;
-    RecordingTimer recordingTimer;
 
+    StorageMonitor storageMonitor;
+
+    RecordingTimer recordingTimer;
     QObject::connect(&recordingTimer, &RecordingTimer::stopRecording, &pipeline, &Pipeline::stopRecording);
     QObject::connect(&pipeline, &Pipeline::recordingStopping, &recordingTimer, &RecordingTimer::clear);
     QObject::connect(&pipeline, &Pipeline::recordingStopped, &recordingTimer, &RecordingTimer::clear);
+
+    RecordingScheduler recordingScheduler;
+    QObject::connect(&recordingScheduler, &RecordingScheduler::startRecordingUntil, &pipeline, &Pipeline::startRecording);
+    QObject::connect(&recordingScheduler, &RecordingScheduler::startRecordingUntil, &recordingTimer, &RecordingTimer::setStopTime);
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("videoSurface"), videoSurface);
     engine.rootContext()->setContextProperty(QStringLiteral("pipeline"), &pipeline);
     engine.rootContext()->setContextProperty(QStringLiteral("storageMonitor"), &storageMonitor);
     engine.rootContext()->setContextProperty(QStringLiteral("recordingTimer"), &recordingTimer);
+    engine.rootContext()->setContextProperty(QStringLiteral("recordingScheduler"), &recordingScheduler);
     engine.load(QUrl(QStringLiteral("qrc:/player.qml")));
 
     pipeline.start();
