@@ -157,13 +157,24 @@ Window {
         enabled: scheduleVisible
 
         model: recordingScheduler
-        delegate: Text {
-            text: display
-            color: "#ffffff"
-            style: Text.Outline
-            styleColor: "#000000"
-            horizontalAlignment: Text.AlignLeft
-            textFormat: Text.PlainText
+        delegate: Row {
+            spacing: 5
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: display
+                color: "#ffffff"
+                style: Text.Outline
+                styleColor: "#000000"
+                horizontalAlignment: Text.AlignLeft
+                textFormat: Text.PlainText
+            }
+
+            Button {
+                anchors.verticalCenter: parent.verticalCenter
+                text: "Remove"
+                onClicked: recordingScheduler.removeSchedule(index)
+            }
         }
     }
 

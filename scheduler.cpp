@@ -103,7 +103,7 @@ bool RecordingScheduler::setData(const QModelIndex &index, const QVariant &value
     return true;
 }
 
-void RecordingScheduler::insertChild(const QDateTime &startTime, const QDateTime &stopTime)
+void RecordingScheduler::addSchedule(const QDateTime &startTime, const QDateTime &stopTime)
 {
     auto child = new ScheduledRecording(this);
     child->setStartTime(startTime);
@@ -113,23 +113,28 @@ void RecordingScheduler::insertChild(const QDateTime &startTime, const QDateTime
     connect(child, &ScheduledRecording::startRecordingUntil, this, &RecordingScheduler::removeChild);
     connect(child, &ScheduledRecording::startRecordingUntil, this, &RecordingScheduler::startRecordingUntil);
 
-    auto index = items.size();
-    beginInsertRows(QModelIndex(), index, index);
+    auto row = items.size();
+    beginInsertRows(QModelIndex(), row, row);
     items.append(child);
     endInsertRows();
     save();
 }
 
-void RecordingScheduler::removeChild()
+void RecordingScheduler::removeSchedule(int row)
 {
-    auto index = items.indexOf(static_cast<ScheduledRecording *>(sender()));
-    if (index < 0)
+    if (row < 0 || row >= items.size())
         return;
 
-    beginRemoveRows(QModelIndex(), index, index);
-    items.takeAt(index)->deleteLater();
+    beginRemoveRows(QModelIndex(), row, row);
+    items.takeAt(row)->deleteLater();
     endRemoveRows();
     save();
+}
+
+void RecordingScheduler::removeChild()
+{
+    auto row = items.indexOf(static_cast<ScheduledRecording *>(sender()));
+    removeSchedule(row);
 }
 
 void RecordingScheduler::load()
