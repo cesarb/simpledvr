@@ -20,6 +20,7 @@ Window {
 
     property real scheduleZ: 1
     property real scheduleOpacity: 0.75
+    property bool scheduleVisible: false
 
     VideoItem {
         id: video
@@ -37,6 +38,11 @@ Window {
         Button {
             text: "Record"
             onClicked: pipeline.startRecording()
+        }
+
+        Button {
+            text: "Schedule"
+            onClicked: scheduleVisible = !scheduleVisible
         }
 
         Button {
@@ -144,8 +150,11 @@ Window {
         anchors.top: centerColumn.bottom
         anchors.left: leftColumn.right
         anchors.right: rightColumn.left
+        anchors.bottom: scheduleForm.top
         z: scheduleZ
         opacity: scheduleOpacity
+        visible: scheduleVisible
+        enabled: scheduleVisible
 
         model: recordingScheduler
         delegate: Text {
@@ -155,6 +164,27 @@ Window {
             styleColor: "#000000"
             horizontalAlignment: Text.AlignLeft
             textFormat: Text.PlainText
+        }
+    }
+
+    ScheduleForm {
+        id: scheduleForm
+        anchors.left: leftColumn.right
+        anchors.right: rightColumn.left
+        anchors.bottom: parent.bottom
+        z: scheduleZ
+        opacity: scheduleOpacity
+        visible: scheduleVisible
+        enabled: scheduleVisible
+
+        addButton.onClicked: addSchedule()
+
+        function addSchedule() {
+            var start = new Date();
+            start.setTime(startDate.getTime() + startHour * 60 * 60 * 1000 + startMinute * 60 * 1000);
+            var stop = new Date();
+            stop.setTime(start.getTime() + durationHours * 60 * 60 * 1000 + durationMinutes * 60 * 1000);
+            recordingScheduler.addSchedule(start, stop);
         }
     }
 }

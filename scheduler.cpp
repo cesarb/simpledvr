@@ -103,9 +103,12 @@ bool RecordingScheduler::setData(const QModelIndex &index, const QVariant &value
     return true;
 }
 
-ScheduledRecording *RecordingScheduler::insertChild()
+void RecordingScheduler::insertChild(const QDateTime &startTime, const QDateTime &stopTime)
 {
     auto child = new ScheduledRecording(this);
+    child->setStartTime(startTime);
+    child->setStopTime(stopTime);
+
     connect(child, &ScheduledRecording::destroyed, this, &RecordingScheduler::removeChild);
     connect(child, &ScheduledRecording::startRecordingUntil, this, &RecordingScheduler::removeChild);
     connect(child, &ScheduledRecording::startRecordingUntil, this, &RecordingScheduler::startRecordingUntil);
@@ -114,8 +117,7 @@ ScheduledRecording *RecordingScheduler::insertChild()
     beginInsertRows(QModelIndex(), index, index);
     items.append(child);
     endInsertRows();
-
-    return child;
+    save();
 }
 
 void RecordingScheduler::removeChild()
@@ -127,7 +129,6 @@ void RecordingScheduler::removeChild()
     beginRemoveRows(QModelIndex(), index, index);
     items.takeAt(index)->deleteLater();
     endRemoveRows();
-
     save();
 }
 

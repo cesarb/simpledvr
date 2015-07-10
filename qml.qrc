@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>player.qml</file>
+        <file>ScheduleForm.ui.qml</file>
     </qresource>
 </RCC>

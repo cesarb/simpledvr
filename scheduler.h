@@ -53,9 +53,10 @@ signals:
     void startRecordingUntil(const QDateTime &stopTime);
 
 public slots:
+    void addSchedule(const QDateTime &startTime, const QDateTime &stopTime) { insertChild(startTime, stopTime); }
 
 private:
-    ScheduledRecording *insertChild();
+    void insertChild(const QDateTime &startTime, const QDateTime &stopTime);
     void removeChild();
 
     void load();
