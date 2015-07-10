@@ -1,5 +1,10 @@
 #include "scheduler.h"
 
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QStandardPaths>
+
 ScheduledRecording::ScheduledRecording(QObject *parent) : QObject(parent)
 {
     timer.setTimerType(Qt::VeryCoarseTimer);
@@ -27,6 +32,18 @@ void ScheduledRecording::timeout()
     }
 
     emit startRecordingUntil(stopTime);
+}
+
+void ScheduledRecording::read(const QJsonObject &json)
+{
+    setStartTime(QDateTime::fromString(json.value("start").toString(), Qt::ISODate));
+    setStopTime(QDateTime::fromString(json.value("stop").toString(), Qt::ISODate));
+}
+
+void ScheduledRecording::write(QJsonObject &json) const
+{
+    json.insert("start", getStartTime().toString(Qt::ISODate));
+    json.insert("stop", getStopTime().toString(Qt::ISODate));
 }
 
 RecordingScheduler::RecordingScheduler(QObject *parent) : QAbstractListModel(parent)
@@ -103,15 +120,20 @@ bool RecordingScheduler::setData(const QModelIndex &index, const QVariant &value
     return true;
 }
 
-void RecordingScheduler::addSchedule(const QDateTime &startTime, const QDateTime &stopTime)
+ScheduledRecording *RecordingScheduler::newChild()
 {
     auto child = new ScheduledRecording(this);
-    child->setStartTime(startTime);
-    child->setStopTime(stopTime);
-
     connect(child, &ScheduledRecording::destroyed, this, &RecordingScheduler::removeChild);
     connect(child, &ScheduledRecording::startRecordingUntil, this, &RecordingScheduler::removeChild);
     connect(child, &ScheduledRecording::startRecordingUntil, this, &RecordingScheduler::startRecordingUntil);
+    return child;
+}
+
+void RecordingScheduler::addSchedule(const QDateTime &startTime, const QDateTime &stopTime)
+{
+    auto child = newChild();
+    child->setStartTime(startTime);
+    child->setStopTime(stopTime);
 
     auto row = items.size();
     beginInsertRows(QModelIndex(), row, row);
@@ -137,12 +159,44 @@ void RecordingScheduler::removeChild()
     removeSchedule(row);
 }
 
+QString RecordingScheduler::scheduleFileName()
+{
+    auto path = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
+    return path + QStringLiteral("/simpledvr.json");
+}
+
 void RecordingScheduler::load()
 {
+    QFile file(scheduleFileName());
+    if (!file.open(QFile::ReadOnly))
+        return;
 
+    auto jsonDocument = QJsonDocument::fromJson(file.readAll());
+    auto jsonItems = jsonDocument.array();
+    for (auto jsonItem : jsonItems) {
+        auto child = newChild();
+        child->read(jsonItem.toObject());
+        items.append(child);
+    }
 }
 
 void RecordingScheduler::save()
 {
+    QFile file(scheduleFileName());
+    if (items.isEmpty()) {
+        file.remove();
+        return;
+    }
 
+    QJsonArray jsonItems;
+    for (auto item : items) {
+        QJsonObject jsonItem;
+        item->write(jsonItem);
+        jsonItems.append(jsonItem);
+    }
+
+    QJsonDocument jsonDocument(jsonItems);
+    file.open(QFile::WriteOnly);
+    file.write(jsonDocument.toJson());
+    file.close();
 }

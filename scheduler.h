@@ -3,6 +3,7 @@
 
 #include <QAbstractListModel>
 #include <QDateTime>
+#include <QJsonObject>
 #include <QList>
 #include <QObject>
 #include <QTimer>
@@ -18,6 +19,9 @@ public:
 
     void setStartTime(const QDateTime &startTime) { this->startTime = startTime; updateTimer(); }
     void setStopTime(const QDateTime &stopTime) { this->stopTime = stopTime; }
+
+    void read(const QJsonObject &json);
+    void write(QJsonObject &json) const;
 
 signals:
     void startRecordingUntil(const QDateTime &stopTime);
@@ -57,8 +61,10 @@ public slots:
     void removeSchedule(int row);
 
 private:
+    ScheduledRecording *newChild();
     void removeChild();
 
+    static QString scheduleFileName();
     void load();
     void save();
 
