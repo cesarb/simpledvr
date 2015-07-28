@@ -117,6 +117,11 @@ Window {
                 onStorageAvailable: available.text = text
             }
         }
+
+        Button {
+            text: "Full Screen"
+            onClicked: if (window.visibility == Window.FullScreen) { window.showMaximized() } else { window.showFullScreen() }
+        }
     }
 
     ColumnLayout {
