@@ -79,7 +79,7 @@ static QGst::ElementPtr createVAAPIEncoder()
 
     auto vaapipostproc = QGst::ElementFactory::make("vaapipostproc");
     auto vaapiqueue = QGst::ElementFactory::make("queue", "vaapiQueue");
-    auto vaapiencode = QGst::ElementFactory::make("vaapiencode_h264");
+    auto vaapiencode = QGst::ElementFactory::make("vaapih264enc");
 
     auto audioEncoder = QGst::ElementFactory::make("avenc_ac3");
 
@@ -109,11 +109,14 @@ int main(int argc, char *argv[])
     parser.process(app);
 
     auto videoSurface = new QGst::Quick::VideoSurface;
+    auto videoconvert = QGst::ElementFactory::make("videoconvert");
+
+    videoconvert->link(videoSurface->videoSink());
 
     auto source = parser.isSet(testSourceOption) ? createTestSource() : createCaptureSource();
     auto encoderFactory = parser.isSet(testEncoderOption) ? createSoftwareEncoder : createVAAPIEncoder;
 
-    Pipeline pipeline(source, videoSurface->videoSink(), encoderFactory);
+    Pipeline pipeline(source, videoconvert, encoderFactory);
 
     StorageMonitor storageMonitor;
 
